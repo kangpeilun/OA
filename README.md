@@ -1,3 +1,10 @@
+# 环境要求
+
+```python
+python=3.7
+Django=2.2
+```
+
 ## 1.数据库创建
 
 ```python
