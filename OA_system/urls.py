@@ -15,8 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from system_manage import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('testing.urls'))
+    path('login/', views.login, name='login'),   # 登录
+    path('register/', views.register, name='register'),    # 注册
+    path('system_manage/', include('system_manage.urls')),  # 系统管理
+    path('customer_manage', include('customer_manage.urls')),   # 客户管理
 ]
