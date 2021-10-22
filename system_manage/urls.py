@@ -13,7 +13,6 @@ urlpatterns = [
     path('manage_center/', views.manage_center, name='manage_center'),
     path('user_manage/', views.user_manage, name='user_manage'),
     path('role_manage/', views.role_manage, name='role_manage'),
-    path('company_manage', views.company_manage, name='company_manage'),
-    path('partment_manage', views.partment_manage, name='partment_manage'),
-
+    path('company_manage/', views.company_manage, name='company_manage'),
+    path('partment_manage/', views.partment_manage, name='partment_manage'),
 ]

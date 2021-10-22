@@ -15,12 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from system_manage import views
+from system_manage import views as sys_views
+import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', views.login, name='login'),   # 登录
-    path('register/', views.register, name='register'),    # 注册
+    path('', sys_views.login, name='login'),   # 登录
+    path('register/', sys_views.register, name='register'),    # 注册
     path('system_manage/', include('system_manage.urls')),  # 系统管理
-    path('customer_manage', include('customer_manage.urls')),   # 客户管理
+    path('customer_manage/', include('customer_manage.urls')),   # 客户管理
 ]
+
+# handler404 = views.page_not_found  # 404页面
