@@ -7,28 +7,38 @@ from utils.authorization import is_authorized
 # Create your views here.
 # ============================== ↓管理员管理 ===================================
 def login(request):
-    name = request.POST.get('name')
-    password = request.POST.get('password')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        password = request.POST.get('password')
 
-    manager = Manager.objects.filter(name=name).first()
-    if manager:
-        if manager.password == password:
-            request.session['uid'] = manager.id
-            return redirect(reverse('manage_center'))  # 用户名密码正确进入系统主页
-        return HttpResponse('用户名或密码错误')
+        manager = Manager.objects.filter(name=name).first()
+        print('manager',manager)
+        if manager:
+            if manager.password == password:
+                request.session['uid'] = manager.id
+                return HttpResponse('登陆成功', status=200)  # 用户名密码正确进入系统主页
+            return HttpResponse('用户名或密码错误', status=400)
+        return HttpResponse('用户名或密码错误', status=400)
+
     return render(request, 'login.html')
 
 
 def register(request):
-    name = request.POST.get('name')
-    password = request.POST.get('password')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        password = request.POST.get('password')
+        print('name, password', name, password)
+        if not Manager.objects.filter(name=name).first():
+            # 若该用户名不存在，则可以注册
+            manager = Manager()
+            manager.name = name.strip()
+            manager.password = password.strip()
+            manager.save()
+            return HttpResponse('注册成功', status=200)
+        else:
+            return HttpResponse('该用户名已被注册！', status=400)
 
-    manager = Manager()
-    manager.name = name.strip()
-    manager.password = password.strip()
-    manager.save()
-
-    return redirect(reverse('login'))
+    return render(request, 'register.html')
 
 
 def manage_center(request):
@@ -43,7 +53,6 @@ def manage_center(request):
         'name': name,
     }
     return render(request, 'manage_center.html', context=context)
-
 
 # ============================== ↑管理员管理 ===================================
 

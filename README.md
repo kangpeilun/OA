@@ -26,7 +26,7 @@ Required: **settings.py 文件中必须修改的两项**
 ```python
 DEBUG = False  # 必须取消debug模式
 
-ALLOWED_HOSTS = ['*']  # 必须配置可以访问的
+ALLOWED_HOSTS = ['*']  # 必须配置可以访问的ip
 ```
 
 在主程序下新建views.py文件
@@ -83,5 +83,17 @@ handler500 = view.page_inter_error
 git config --global http.proxy http://127.0.0.1:1080
 
 git config --global https.proxy http://127.0.0.1:1080
+```
+
+### 2.Forbidden (CSRF token missing or incorrect.)
+
+在JS中,使用post方法提交数据到后台,如果页面没有做跨站伪造,则会被浏览器拒绝访问,解决这个问题很简单,只需要在相应的HTML页面导入JS的位置加上如下代码就好:
+
+```html
+ <script>
+        $.ajaxSetup({
+            data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+        })
+</script>
 ```
 
