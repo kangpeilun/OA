@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../static/css/layui/layui.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/layui/css/layui.css"/>
+</head>
+<body>
+<div id="page_select" class="layui-box layui-laypage layui-laypage-default " style="visibility: hidden;">
+    <span class="layui-laypage-count">共 {{ num_all }} 条</span>
+    {% if page_data.has_previous %}
+        <a href="{{ the_url }}{{ get_split }}p={{ page_data.previous_page_number }}"
+           class="layui-laypage-prev">上一页</a>
+    {% else %}
+        <a href="javascript:void(0);" class="layui-laypage-prev layui-disabled">上一页</a>
+    {% endif %}
+
+    {% if left_has_more %}
+        <a href="{{ the_url }}{{ get_split }}p=1">1</a>
+        <span class="layui-laypage-spr">…</span>
+    {% endif %}
+
+    {% for left_page in left_pages %}
+        <a href="{{ the_url }}{{ get_split }}p={{ left_page }}">{{ left_page }}</a>
+    {% endfor %}
+
+    <span class="layui-laypage-curr"><em class="layui-laypage-em"></em><em>{{ current_page }}</em></span>
+
+    {% for right_page in right_pages %}
+        <a href="{{ the_url }}{{ get_split }}p={{ right_page }}">{{ right_page }}</a>
+    {% endfor %}
+
+
+    {% if right_has_more %}
+        <span class="layui-laypage-spr">…</span>
+        <a href="{{ the_url }}{{ get_split }}p={{ num_pages }}">{{ num_pages }}</a>
+    {% endif %}
+
+    {% if page_data.has_next %}
+        <a href="{{ the_url }}{{ get_split }}p={{ page_data.next_page_number }}" class="layui-laypage-prev">下一页</a>
+    {% else %}
+        <a href="javascript:void(0);" class="layui-laypage-prev layui-disabled">下一页</a>
+    {% endif %}
+
+    <a href="{{ the_url }}{{ get_split }}p={{ current_page }}" class="layui-laypage-refresh"><i
+            class="layui-icon layui-icon-refresh"></i></a>
+
+    <span class="layui-laypage-skip">到第<input type="text" min="1" max="{{ num_pages }}" value="1"
+                                              class="layui-input" id="num_page">页
+                    <button type="button" class="layui-laypage-btn" id="change2page">确定</button>
+                </span>
+
+    <script>
+        let width = $("#page_select").width();
+        let margin_len = Math.ceil((1550 - width) / 2);
+        document.getElementById("page_select").style.marginLeft = margin_len + "px";
+        document.getElementById("page_select").style.visibility = "visible";
+
+        $("#change2page").click(function () {
+                let num_page = $('#num_page').val();
+                if (num_page < 1 || num_page > {{ num_pages }}) {
+                    window.messageBox.show("页数超限");
+                    return;
+                }
+                window.location.href = '{{ the_url }}{{ get_split }}p=' + num_page;
+            }
+        )
+    </script>
+</div>
+</body>
+</html>

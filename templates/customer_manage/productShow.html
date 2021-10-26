@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link href="../../static/css/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="../../static/css/css/style.css"/>
+    <link href="../../static/css/assets/css/codemirror.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/assets/css/ace.min.css"/>
+    <link rel="stylesheet" href="../../static/css/assets/css/font-awesome.min.css"/>
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="../../static/css/assets/css/font-awesome-ie7.min.css"/>
+    <![endif]-->
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="../../static/css/assets/css/ace-ie.min.css"/>
+    <![endif]-->
+    <script src="../../static/css/assets/js/jquery.min.js"></script>
+    <title>详情信息</title>
+</head>
+<body>
+<div class="member_show">
+
+    <div class="member_content">
+        <ul>
+            <li><label class="label_name">名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：</label><span class="name">{{ product.name }}</span></li>
+            <li><label class="label_name">供&nbsp;&nbsp;应&nbsp;&nbsp;商：</label><span class="name">{{ product.supplier }}</span></li>
+            <li><label class="label_name">产品编号：</label><span class="name">{{ product.num }}</span></li>
+            <li><label class="label_name">产品类型：</label><span class="name" style="color: #6FB3E0;">{{ product.type }}</span></li>
+            <li><label class="label_name">价格：</label><span class="name">{{ product.price }}</span></li>
+            <li><label class="label_name">上传时间：</label><span class="name">{{ product.create_time }}</span></li>
+            <li><label class="label_name">产品描述：</label><span class="name">{{ product.describe }}</span></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

@@ -23,6 +23,10 @@ def login(request):
     return render(request, 'login.html')
 
 
+def logout(request):
+    del request.session['uid']
+    return render(request, 'login.html')
+
 def register(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -64,7 +68,7 @@ def user_manage(request):
         return redirect(reverse('login'))
 
     # 如果是post请求，则添加用户信息
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('modify') == 'False':
         name = request.POST.get('name')
         password = request.POST.get('password')
         sex = request.POST.get('sex')
@@ -75,8 +79,8 @@ def user_manage(request):
         user.name = name.strip()
         user.password = password.strip()
         user.sex = sex.strip()
-        partment = Partment.objects.get(name=partment.strip())
-        role = Role.objects.get(name=role.strip())
+        partment = Partment.objects.filter(name=partment.strip()).first()
+        role = Role.objects.filter(name=role.strip()).first()
         if partment:
             # 如果在Partment表中查到对应部门 建立外键关系
             user.partment = partment
@@ -89,8 +93,64 @@ def user_manage(request):
 
         return redirect(reverse('user_manage'))
 
+    elif request.method == 'POST' and request.POST.get('modify') == 'True':
+        id = int(request.POST.get('id'))
+        name = request.POST.get('name')
+        password = request.POST.get('password')
+        sex = request.POST.get('sex')
+        partment = request.POST.get('partment')
+        role = request.POST.get('role')
+
+        user = User.objects.get(id=id)
+        # 只修改用户输入的部分
+        if len(name) > 0:
+            user.name = name
+        if len(password) > 0:
+            user.num = password
+        if len(sex) > 0:
+            user.num = sex
+        if len(partment) > 0:
+            partment = Partment.objects.filter(name=partment.strip()).first()
+            if partment:
+                # 如果在Partment表中查到对应部门 建立外键关系
+                user.partment = partment
+
+        if len(role) > 0:
+            role = Role.objects.filter(name=role.strip()).first()
+            if role:
+                # 如果在Company表中查到对应公司 建立外键关系
+                user.company = role
+
+        user.save()
+        return HttpResponse('修改部门信息成功', status=200)
+
+    # 使用逻辑删除
+    elif request.POST.get('delete_all') == 'False':
+        id = int(request.POST.get('id'))
+        user = User.objects.get(id=id)
+        user.is_delete = 1
+        user.save()
+        return HttpResponse('企业删除成功', status=200)
+
+    elif request.POST.get('delete_all') == 'True':
+        ids = request.POST.get('ids')
+        print('ids', ids)
+        mod = User.objects
+        if len(ids) > 1:
+            ids = eval(ids)
+            for id in ids:
+                user = mod.get(id=id)
+                user.is_delete = 1
+                user.save()
+        else:
+            # 长度为1时单独处理
+            user = mod.get(id=ids)
+            user.is_delete = 1
+            user.save()
+        return HttpResponse('产品删除成功', status=200)
+
     # 如果不是POST请求，则正常显示查询到的结果
-    users = User.objects.all()
+    users = User.objects.filter(is_delete=0).all()
     pagesize = 10  # 每页显示的数据条数
     pagenum = int(request.GET.get('p', 1))  # 要显示的页码, 默认显示第一页
     page, context = get_pagination_info(users, pagesize, pagenum)  # 分页处理
@@ -110,7 +170,7 @@ def role_manage(request):
         return redirect(reverse('login'))
 
     # 如果是post请求，则添加用户信息
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('modify')=='False':
         num = request.POST.get('num')
         name = request.POST.get('name')
 
@@ -119,10 +179,49 @@ def role_manage(request):
         role.name = name.strip()
         role.save()
 
-        return redirect(reverse('role_manage'))
+        return HttpResponse('角色添加成功',status=200)
+
+    elif request.method == 'POST' and request.POST.get('modify') == 'True':
+        id = int(request.POST.get('id'))
+        name = request.POST.get('name')
+        num = request.POST.get('num')
+
+        role = Role.objects.get(id=id)
+        # 只修改用户输入的部分
+        if len(name) > 0:
+            role.name = name
+        if len(num) > 0:
+            role.num = num
+        role.save()
+        return HttpResponse('修改角色信息成功', status=200)
+
+        # 使用逻辑删除
+    elif request.POST.get('delete_all') == 'False':
+        id = int(request.POST.get('id'))
+        role = Role.objects.get(id=id)
+        role.is_delete = 1
+        role.save()
+        return HttpResponse('产品删除成功', status=200)
+
+    elif request.POST.get('delete_all') == 'True':
+        ids = request.POST.get('ids')
+        print('ids', ids)
+        mod = Role.objects
+        if len(ids) > 1:
+            ids = eval(ids)
+            for id in ids:
+                role = mod.get(id=id)
+                role.is_delete = 1
+                role.save()
+        else:
+            # 长度为1时单独处理
+            role = mod.get(id=ids)
+            role.is_delete = 1
+            role.save()
+        return HttpResponse('产品删除成功', status=200)
 
     # 如果不是POST请求，则正常显示查询到的结果
-    roles = Role.objects.all()
+    roles = Role.objects.filter(is_delete=0).all()
     pagesize = 10  # 每页显示的数据条数
     pagenum = int(request.GET.get('p', 1))  # 要显示的页码
     page, context = get_pagination_info(roles, pagesize, pagenum)  # 分页处理
@@ -142,7 +241,7 @@ def company_manage(request):
         return redirect(reverse('login'))
 
     # 如果是post请求，则添加用户信息
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('modify')=='False':
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         fax = request.POST.get('fax')
@@ -162,10 +261,64 @@ def company_manage(request):
 
         company.save()
 
-        return redirect(reverse('company_manage'))
+        return HttpResponse('企业添加成功',status=200)
+
+    elif request.method == 'POST' and request.POST.get('modify') == 'True':
+        id = int(request.POST.get('id'))
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        fax = request.POST.get('fax')
+        zipcode = request.POST.get('zipcode')
+        site = request.POST.get('site')
+        bankdeposit = request.POST.get('bankdeposit')
+        banknum = request.POST.get('banknum')
+
+        company = Company.objects.get(id=id)
+        # 只修改用户输入的部分
+        if len(name) > 0:
+            company.name = name
+        if len(phone) > 0:
+            company.num = phone
+        if len(fax) > 0:
+            company.num = fax
+        if len(zipcode) > 0:
+            company.num = zipcode
+        if len(site) > 0:
+            company.num = site
+        if len(bankdeposit) > 0:
+            company.num = bankdeposit
+        if len(banknum) > 0:
+            company.num = banknum
+        company.save()
+        return HttpResponse('修改企业信息成功', status=200)
+
+    # 使用逻辑删除
+    elif request.POST.get('delete_all') == 'False':
+        id = int(request.POST.get('id'))
+        company = Company.objects.get(id=id)
+        company.is_delete = 1
+        company.save()
+        return HttpResponse('企业删除成功', status=200)
+
+    elif request.POST.get('delete_all') == 'True':
+        ids = request.POST.get('ids')
+        print('ids', ids)
+        mod = Company.objects
+        if len(ids) > 1:
+            ids = eval(ids)
+            for id in ids:
+                company = mod.get(id=id)
+                company.is_delete = 1
+                company.save()
+        else:
+            # 长度为1时单独处理
+            company = mod.get(id=ids)
+            company.is_delete = 1
+            company.save()
+        return HttpResponse('产品删除成功', status=200)
 
     # 如果不是POST请求，则正常显示查询到的结果
-    companys = Company.objects.all()
+    companys = Company.objects.filter(is_delete=0).all()
     pagesize = 10  # 每页显示的数据条数
     pagenum = int(request.GET.get('p', 1))  # 要显示的页码
     page, context = get_pagination_info(companys, pagesize, pagenum)  # 分页处理
@@ -185,7 +338,7 @@ def partment_manage(request):
         return redirect(reverse('login'))
 
     # 如果是post请求，则添加用户信息
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('modify')=='False':
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         fax = request.POST.get('fax')
@@ -201,8 +354,8 @@ def partment_manage(request):
         partment.function = function.strip()
         partment.num = num.strip()
 
-        company = Company.objects.get(name=company.strip())
-        prepartment = Partment.objects.get(name=prepartment.strip())
+        company = Company.objects.filter(name=company.strip()).first()
+        prepartment = Partment.objects.filter(name=prepartment.strip()).first()
         if company:
             # 如果在Company表中查到对应公司 建立外键关系
             partment.company = company
@@ -213,10 +366,72 @@ def partment_manage(request):
 
         partment.save()
 
-        return redirect(reverse('partment_manage'))
+        return HttpResponse('部门添加成功',status=200)
+
+    elif request.method == 'POST' and request.POST.get('modify') == 'True':
+        id = int(request.POST.get('id'))
+        name = request.POST.get('name')
+        phone = request.POST.get('phone')
+        fax = request.POST.get('fax')
+        prepartment = request.POST.get('prepartment')
+        function = request.POST.get('function')
+        num = request.POST.get('num')
+        company = request.POST.get('company')
+
+        partment = Partment.objects.get(id=id)
+        # 只修改用户输入的部分
+        if len(name) > 0:
+            partment.name = name
+        if len(phone) > 0:
+            partment.num = phone
+        if len(fax) > 0:
+            partment.num = fax
+        if len(prepartment) > 0:
+            prepartment = Partment.objects.filter(name=prepartment.strip()).first()
+            if prepartment:
+                # 如果在Partment表中查到对应部门 建立外键关系
+                partment.prepartment = prepartment
+
+        if len(function) > 0:
+            partment.num = function
+        if len(num) > 0:
+            partment.num = num
+        if len(company) > 0:
+            company = Company.objects.filter(name=company.strip()).first()
+            if company:
+                # 如果在Company表中查到对应公司 建立外键关系
+                partment.company = company
+
+        partment.save()
+        return HttpResponse('修改部门信息成功', status=200)
+
+    # 使用逻辑删除
+    elif request.POST.get('delete_all') == 'False':
+        id = int(request.POST.get('id'))
+        partment = Partment.objects.get(id=id)
+        partment.is_delete = 1
+        partment.save()
+        return HttpResponse('企业删除成功', status=200)
+
+    elif request.POST.get('delete_all') == 'True':
+        ids = request.POST.get('ids')
+        print('ids', ids)
+        mod = Partment.objects
+        if len(ids) > 1:
+            ids = eval(ids)
+            for id in ids:
+                partment = mod.get(id=id)
+                partment.is_delete = 1
+                partment.save()
+        else:
+            # 长度为1时单独处理
+            partment = mod.get(id=ids)
+            partment.is_delete = 1
+            partment.save()
+        return HttpResponse('产品删除成功', status=200)
 
     # 如果不是POST请求，则正常显示查询到的结果
-    partments = Partment.objects.all()
+    partments = Partment.objects.filter(is_delete=0).all()
     pagesize = 10  # 每页显示的数据条数
     pagenum = int(request.GET.get('p', 1))  # 要显示的页码
     page, context = get_pagination_info(partments, pagesize, pagenum)  # 分页处理
@@ -229,11 +444,3 @@ def partment_manage(request):
 
 
 # ============================== 删除信息 ===================================
-# TODO: 使用一个视图函数控制所有的表的删除, 可以实现批量删除
-def delete_info(request):
-    manager, authoried = is_authorized(request)
-    # 如果没有被授权，则将重定向到登陆页面
-    if not authoried:
-        return redirect(reverse('login'))
-
-    pass

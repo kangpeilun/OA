@@ -12,4 +12,7 @@ from customer_manage import views
 urlpatterns = [
     path('customer_manage/', views.customer_manage, name='customer_manage'),
     path('product_manage/', views.product_manage, name='product_manage'),
+
+    path('customer_show/', views.customer_show, name='customer_show'),
+    path('product_show/', views.product_show, name='product_show'),
 ]

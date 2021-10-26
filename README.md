@@ -69,6 +69,64 @@ handler404 = views.page_not_found  # 404页面
 handler500 = view.page_inter_error
 ```
 
+### 3.jquery使用ajax方法
+
+#### ajax发送get请求
+
+```html
+<script>
+    $.get({
+        'url': '{% url 'django_name' %}',  //{% url 'django_name' %}使用django提供的反向解析获取路由
+        'data': { // 要发送的数据
+            'name': name,
+            'password': password,
+        },
+        'type': 'GET',  //请求的类型
+        'success': function(result){
+            // 要求HttpResponse(status=200), 可以自己状态码
+            // 请求成功执行的操作，result中存放着HttpResponse的内容，可以使用JSON.parse(result)将json格式的数据解析为 字典
+
+        },
+        'error': function(err){
+            // 要求HttpResponse(status=400), 可以自己状态码
+            // 请求失败执行的操作
+        }
+    })
+</script>
+```
+
+#### ajax发送post请求
+
+```html
+<script>
+    $.post({
+        'url': '{% url 'django_name' %}',  //{% url 'django_name' %}使用django提供的反向解析获取路由
+        'data': { // 要发送的数据
+            'name': name,
+            'password': password,
+        },
+        'type': 'POST',  //请求的类型
+        'success': function(result){
+            // 要求HttpResponse(status=200), 可以自己状态码
+            // 请求成功执行的操作，result中存放着HttpResponse的内容，可以使用JSON.parse(result)将json格式的数据解析为 字典
+
+        },
+        'error': function(err){
+            // 要求HttpResponse(status=400), 可以自己状态码
+            // 请求失败执行的操作
+        }
+    })
+</script>
+```
+
+### 4.Mysql命令导出数据库
+
+```python
+mysqldump -u用户名 -p 数据库名称 > 导出到的文件名.sql
+```
+
+
+
 
 
 
@@ -90,10 +148,22 @@ git config --global https.proxy http://127.0.0.1:1080
 在JS中,使用post方法提交数据到后台,如果页面没有做跨站伪造,则会被浏览器拒绝访问,解决这个问题很简单,只需要在相应的HTML页面导入JS的位置加上如下代码就好:
 
 ```html
- <script>
+<script>
         $.ajaxSetup({
             data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
         })
 </script>
 ```
+
+### 3.解决 Ajax 发送 post 请求出现 403 Forbidden
+
+```html
+<script>
+        $.ajaxSetup({
+            data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+        })
+</script>
+```
+
+
 

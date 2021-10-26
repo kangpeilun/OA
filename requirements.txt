@@ -1,0 +1,9 @@
+Django==2.2.5
+django-filter==21.1
+djangorestframework==3.12.4
+importlib-metadata==4.8.1
+Markdown==3.3.4
+mysqlclient==2.0.3
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1633452062248/work
+sqlparse @ file:///home/conda/feedstock_root/build_artifacts/sqlparse_1631317292236/work
+zipp==3.6.0
